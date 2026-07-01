@@ -33,6 +33,40 @@ python3 -m unittest discover
 
 If all tests pass, your solution works for the included checks.
 
+## Topic Challenges
+
+Additional challenge folders are organized by topic:
+
+- `12-loops/`
+- `13-functions/`
+- `14-function-parameters/`
+- `15-packages/`
+- `16-calling-apis/`
+- `17-json/`
+- `18-decorators/`
+
+Each folder contains a `challenge.py` file with functions for you to
+implement. These files intentionally raise `NotImplementedError` until you
+solve them.
+
+Run one topic at a time while you practice:
+
+```bash
+python3 -m unittest tests.test_12_loops
+python3 -m unittest tests.test_13_functions
+python3 -m unittest tests.test_14_function_parameters
+python3 -m unittest tests.test_15_packages
+python3 -m unittest tests.test_16_calling_apis
+python3 -m unittest tests.test_17_json
+python3 -m unittest tests.test_18_decorators
+```
+
+After you solve all active exercises, run the full test suite:
+
+```bash
+python3 -m unittest discover
+```
+
 ## Add More Practice
 
 For each new topic:
