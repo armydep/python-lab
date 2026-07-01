@@ -14,6 +14,21 @@ Each part is self-contained and follows the same layout:
   `challenge.py` file for that topic.
 - `tests/` contains the checks for that part's exercises and topic folders.
 
+## Setup
+
+The project has a single `pyproject.toml`/`uv.lock` at the repo root and no
+dependencies, so there's one virtual environment shared by both parts —
+don't create a separate `.venv` inside `part-1/` or `part-2/`.
+
+```bash
+# With uv (uses uv.lock)
+uv sync
+
+# Or with the stdlib venv module
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
 ## How to Run
 
 Each part has its own `tests/` package, so run `unittest` from inside that
