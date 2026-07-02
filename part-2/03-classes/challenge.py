@@ -19,15 +19,15 @@ Run:
 
 class Presenter:
     def __init__(self, name: str) -> None:
-        raise NotImplementedError
+        self.name = name
 
     @property
     def name(self) -> str:
-        raise NotImplementedError
+        return self._name
 
     @name.setter
     def name(self, value: str) -> None:
-        raise NotImplementedError
+        self._name = value.title()
 
     def greet(self) -> str:
-        raise NotImplementedError
+        return f"Hello, {self._name}"

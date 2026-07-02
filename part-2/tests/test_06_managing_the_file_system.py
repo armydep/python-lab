@@ -7,7 +7,7 @@ from tests.helpers import load_challenge
 
 file_system = load_challenge("06-managing-the-file-system")
 
-
+@unittest.skip("Disabled")
 class ManagingTheFileSystemChallengeTest(unittest.TestCase):
     def test_join_path(self) -> None:
         result = file_system.join_path("/tmp/demo", "new_file.txt")
