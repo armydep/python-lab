@@ -7,7 +7,6 @@ from tests.helpers import load_challenge
 
 resources = load_challenge("08-managing-external-resources")
 
-@unittest.skip("Disabled")
 class ManagingExternalResourcesChallengeTest(unittest.TestCase):
     def test_write_with_context_manager_overwrites_existing_content(self) -> None:
         with TemporaryDirectory() as tmp:

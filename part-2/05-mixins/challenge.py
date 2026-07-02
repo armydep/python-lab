@@ -26,24 +26,31 @@ Run:
 
 class Loggable:
     def __init__(self) -> None:
-        raise NotImplementedError
+        self.title = ""
 
     def log(self) -> str:
-        raise NotImplementedError
+        return f"Log message from {self.title}"
 
 
 class Connection:
     def __init__(self) -> None:
-        raise NotImplementedError
+        self.server = ""
 
     def connect(self) -> str:
-        raise NotImplementedError
+        return f"Connecting to database on {self.server}"
 
 
 class SqlDatabase(Connection, Loggable):
     def __init__(self) -> None:
-        raise NotImplementedError
+        super().__init__()
+        self.title = "Sql Connection Demo"
+        self.server = "Some_Server"
 
 
 def run_framework(item: object) -> list[str]:
-    raise NotImplementedError
+    results = []
+    if isinstance(item, Connection):
+        results.append(item.connect())
+    if isinstance(item, Loggable):
+        results.append(item.log())
+    return results

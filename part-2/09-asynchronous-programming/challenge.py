@@ -20,7 +20,8 @@ async def load_data(delay: float) -> str:
 
     Return the string f"data-after-{delay}s".
     """
-    raise NotImplementedError
+    await asyncio.sleep(delay)
+    return f"data-after-{delay}s"
 
 
 async def load_all(delays: list[float]) -> list[str]:
@@ -28,9 +29,9 @@ async def load_all(delays: list[float]) -> list[str]:
 
     Use asyncio.gather() and return the results in the same order as delays.
     """
-    raise NotImplementedError
+    return await asyncio.gather(*[load_data(d) for d in delays])
 
 
 def run_all(delays: list[float]) -> list[str]:
     """Synchronously run load_all(delays) with asyncio.run() and return the result."""
-    raise NotImplementedError
+    return asyncio.run(load_all(delays))

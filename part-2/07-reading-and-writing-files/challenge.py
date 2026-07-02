@@ -13,12 +13,14 @@ from pathlib import Path
 
 def read_first_line(path: str | Path) -> str:
     """Open path for reading and return its first line, without the newline."""
-    raise NotImplementedError
+    with open(path, "rt") as stream:
+        return stream.readline().rstrip("\n")
 
 
 def read_all_lines(path: str | Path) -> list[str]:
     """Open path for reading and return every line, without newlines."""
-    raise NotImplementedError
+    with open(path, "rt") as stream:
+        return [line.rstrip("\n") for line in stream]
 
 
 def write_lines(path: str | Path, lines: list[str]) -> None:
@@ -26,9 +28,12 @@ def write_lines(path: str | Path, lines: list[str]) -> None:
 
     Overwrite any existing content at path.
     """
-    raise NotImplementedError
+    with open(path, "wt") as stream:
+        for line in lines:
+            stream.write(line + "\n")
 
 
 def append_line(path: str | Path, line: str) -> None:
     """Append line followed by a newline to the end of path."""
-    raise NotImplementedError
+    with open(path, "at") as stream:
+        stream.write(line + "\n")

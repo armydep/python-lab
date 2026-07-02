@@ -5,7 +5,6 @@ from tests.helpers import load_challenge
 
 mixins = load_challenge("05-mixins")
 
-@unittest.skip("Disabled")
 class MixinsChallengeTest(unittest.TestCase):
     def test_sql_database_combines_both_mixins(self) -> None:
         database = mixins.SqlDatabase()

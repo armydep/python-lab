@@ -13,17 +13,17 @@ from pathlib import Path
 
 def join_path(directory: str | Path, name: str) -> Path:
     """Return directory joined with name as a Path."""
-    raise NotImplementedError
+    return Path(directory) / name
 
 
 def path_exists(path: str | Path) -> bool:
     """Return True when path exists on disk."""
-    raise NotImplementedError
+    return Path(path).exists()
 
 
 def is_directory(path: str | Path) -> bool:
     """Return True when path is an existing directory."""
-    raise NotImplementedError
+    return Path(path).is_dir()
 
 
 def file_name_parts(path: str | Path) -> dict[str, str]:
@@ -32,9 +32,14 @@ def file_name_parts(path: str | Path) -> dict[str, str]:
     Example: for ".../notes/demo.txt" return
     {"name": "demo.txt", "suffix": ".txt", "parent_name": "notes"}.
     """
-    raise NotImplementedError
+    file_path = Path(path)
+    return {
+        "name": file_path.name,
+        "suffix": file_path.suffix,
+        "parent_name": file_path.parent.name,
+    }
 
 
 def list_subdirectory_names(directory: str | Path) -> list[str]:
     """Return the sorted names of the immediate subdirectories of directory."""
-    raise NotImplementedError
+    return sorted(path.name for path in Path(directory).iterdir() if path.is_dir())

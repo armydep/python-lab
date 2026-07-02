@@ -23,19 +23,24 @@ Run:
 
 class Person:
     def __init__(self, name: str) -> None:
-        raise NotImplementedError
+        self._name = name
 
     def greet(self) -> str:
-        raise NotImplementedError
+        return f"Hello, {self._name}"
 
 
 class Student(Person):
     def __init__(self, name: str, school: str) -> None:
-        raise NotImplementedError
+        super().__init__(name)
+        self._school = school
 
     def school_song(self) -> str:
-        raise NotImplementedError
+        return f"Ode to {self._school}"
 
 
 def describe(entity: object) -> dict[str, bool]:
-    raise NotImplementedError
+    return {
+        "is_person": isinstance(entity, Person),
+        "is_student": isinstance(entity, Student),
+        "is_student_subclass": issubclass(type(entity), Student),
+    }

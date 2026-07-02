@@ -5,7 +5,6 @@ from tests.helpers import load_challenge
 
 inheritance = load_challenge("04-inheritance")
 
-@unittest.skip("Disabled")
 class InheritanceChallengeTest(unittest.TestCase):
     def test_person_greet(self) -> None:
         person = inheritance.Person("Christopher")

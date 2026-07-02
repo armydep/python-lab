@@ -16,7 +16,8 @@ def write_with_context_manager(path: str | Path, text: str) -> None:
 
     Overwrite any existing content at path.
     """
-    raise NotImplementedError
+    with open(path, "wt") as stream:
+        stream.write(text)
 
 
 def copy_with_context_manager(source: str | Path, destination: str | Path) -> None:
@@ -25,7 +26,8 @@ def copy_with_context_manager(source: str | Path, destination: str | Path) -> No
     Open both files with `with` statements so each is closed automatically,
     even if an error occurs while copying.
     """
-    raise NotImplementedError
+    with open(source, "rt") as src, open(destination, "wt") as dst:
+        dst.write(src.read())
 
 
 def safe_read(path: str | Path, default: str = "") -> str:
@@ -33,4 +35,8 @@ def safe_read(path: str | Path, default: str = "") -> str:
 
     Use a `with` statement for the read; do not let a missing file raise.
     """
-    raise NotImplementedError
+    if not Path(path).exists():
+        return default
+
+    with open(path, "rt") as stream:
+        return stream.read()

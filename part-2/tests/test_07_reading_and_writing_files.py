@@ -7,7 +7,6 @@ from tests.helpers import load_challenge
 
 files = load_challenge("07-reading-and-writing-files")
 
-@unittest.skip("Disabled")
 class ReadingAndWritingFilesChallengeTest(unittest.TestCase):
     def test_read_first_line(self) -> None:
         with TemporaryDirectory() as tmp:
