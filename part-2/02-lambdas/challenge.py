@@ -15,7 +15,7 @@ def sort_by_field(records: list[dict[str, Any]], field: str) -> list[dict[str, A
 
     Do not mutate the input list.
     """
-    raise NotImplementedError
+    return sorted(records, key=lambda record: record[field])
 
 
 def sort_by_name_length(names: list[str]) -> list[str]:
@@ -23,7 +23,7 @@ def sort_by_name_length(names: list[str]) -> list[str]:
 
     Practice using a lambda as the sort key.
     """
-    raise NotImplementedError
+    return sorted(names, key=lambda name: len(name))
 
 
 def square_all(numbers: list[int | float]) -> list[int | float]:
@@ -31,7 +31,7 @@ def square_all(numbers: list[int | float]) -> list[int | float]:
 
     Practice using map() with a lambda.
     """
-    raise NotImplementedError
+    return list(map(lambda number: number * number, numbers))
 
 
 def keep_even(numbers: list[int]) -> list[int]:
@@ -39,4 +39,4 @@ def keep_even(numbers: list[int]) -> list[int]:
 
     Practice using filter() with a lambda.
     """
-    raise NotImplementedError
+    return list(filter(lambda number: number % 2 == 0, numbers))
