@@ -7,4 +7,9 @@ state.
 
 
 def make_counter():
-    raise NotImplementedError
+    val = 0
+    def counter():
+        nonlocal val
+        val = val + 1
+        return val
+    return counter

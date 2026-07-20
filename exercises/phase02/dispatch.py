@@ -9,9 +9,15 @@ division by zero may propagate ZeroDivisionError.
 """
 
 OPERATIONS = {
-    # "add": ...,
+    "add": lambda a, b: a + b,
+    "sub": lambda a, b: a - b,
+    "mul": lambda a, b: a * b,
+    "div": lambda a, b: a / b,
 }
 
 
 def calculate(op, a, b):
-    raise NotImplementedError
+    if op not in OPERATIONS:
+        raise ValueError(f"unknown operation: {op}")
+
+    return OPERATIONS[op](a, b)

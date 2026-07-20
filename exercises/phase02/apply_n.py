@@ -7,8 +7,13 @@ times == 0 returns value). Try both with lambda x: x * 2 and str.upper.
 
 
 def apply_n(func, value, times):
-    raise NotImplementedError
-
+    for _ in range(times):
+        value = func(value)
+    return value
 
 def apply_n_recursive(func, value, times):
-    raise NotImplementedError
+    if times == 0:
+        return value
+
+    val = apply_n_recursive(func, value, times - 1)
+    return func(val)

@@ -20,7 +20,7 @@ print("ab" * 3)
 # prediction:            actual:
 print(bool("False"))
 # prediction:            actual:
-print(0.1 + 0.2 == 0.3)
+print(0.1 + 0.2)
 # prediction:            actual:
 print(1 == True)
 # prediction:            actual:

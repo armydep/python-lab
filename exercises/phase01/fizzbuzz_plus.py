@@ -14,7 +14,75 @@ Check yourself: run Part B with {3: "Fizz", 5: "Buzz", 7: "Bazz"} and verify
 105 prints "FizzBuzzBazz".
 """
 
-# TODO: Part A
+def classic_fizzbuzz(start: int = 1, stop: int = 100) -> list[str]:
+    """Return classic FizzBuzz values from start through stop, inclusive.
+
+    Rules:
+      - multiples of 3 -> "Fizz"
+      - multiples of 5 -> "Buzz"
+      - multiples of both -> "FizzBuzz"
+      - all other numbers -> the number as a string
+    """
+    answer: list[str] = []
+    for number in range(start, stop + 1):
+        match number:
+            case n if n % 15 == 0:
+                answer.append("FizzBuzz")
+            case n if n % 3 == 0:
+                answer.append("Fizz")
+            case n if n % 5 == 0:
+                answer.append("Buzz")
+            case _:
+                answer.append(str(number))
+
+    return answer
 
 
-# TODO: Part B
+def fizzbuzz_plus(
+    start: int = 1,
+    stop: int = 100,
+    rules: dict[int, str] | None = None,
+) -> list[str]:
+    """Return data-driven FizzBuzz values from start through stop, inclusive.
+
+    `rules` maps divisors to words, for example:
+        {3: "Fizz", 5: "Buzz", 7: "Bazz"}
+
+    Numbers matching several rules should concatenate the matching words in
+    ascending-divisor order. Numbers matching no rules become the number as a
+    string.
+    """
+    if rules is None:
+        rules = {3: "Fizz", 5: "Buzz"}
+
+    answer: list[str] = []
+    for number in range(start, stop + 1):
+        result = ""
+        for divisor in sorted(rules):
+            if number % divisor == 0:
+                result += rules[divisor]
+
+        if result:
+            answer.append(result)
+        else:
+            answer.append(str(number))
+
+    return answer
+
+
+
+def print_lines(lines: list[str]) -> None:
+    """Print one output value per line."""
+    # TODO: print each item in `lines`.
+    pass
+
+
+def main() -> None:
+    """Run both exercise parts."""
+    # TODO: call classic_fizzbuzz() for Part A.
+    # TODO: call fizzbuzz_plus(rules={3: "Fizz", 5: "Buzz", 7: "Bazz"}) for Part B.
+    pass
+
+
+if __name__ == "__main__":
+    main()

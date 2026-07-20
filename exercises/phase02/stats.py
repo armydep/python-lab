@@ -6,4 +6,6 @@ describe(*data). See roadmap Phase 2.
 
 
 def describe(*numbers):
-    raise NotImplementedError
+    if len(numbers) == 0:
+        raise ValueError
+    return min(numbers), max(numbers), sum(numbers) / len(numbers)

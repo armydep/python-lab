@@ -13,4 +13,35 @@ Requirements:
 Stretch: find which starting number below 1000 produces the longest sequence.
 """
 
-# TODO
+def collatz_sequence(start: int) -> list[int]:
+    """Return the Collatz sequence beginning at `start` and ending at 1."""
+    # TODO: build and return the sequence
+    ans : list[int] = []
+    for digit in range(start, 1, -1):
+        if digit % 2 == 0:
+            ans.append(digit // 2)
+        if digit % 2 != 1:
+            ans.append(3 * digit + 1)
+    return ans
+
+
+def read_starting_number() -> int | None:
+    """Read and validate a starting number from input().
+
+    Choice for invalid input: print a message and exit by returning None.
+    """
+    # TODO: read input(), reject non-numeric values, and reject numbers < 1.
+    pass
+
+
+def main() -> None:
+    """Run the Collatz exercise."""
+    # TODO: read the starting number.
+    # TODO: generate the sequence.
+    # TODO: print values joined with " -> ".
+    # TODO: print the sequence length.
+    pass
+
+
+if __name__ == "__main__":
+    main()

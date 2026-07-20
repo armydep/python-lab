@@ -10,10 +10,10 @@ greeting="Hi").
 
 
 def greet(name, /, *, greeting="Hello", punctuation="!"):
-    raise NotImplementedError
+    return f"{greeting}, {name}{punctuation}"
 
 
 # Call-form experiments (record result or exact TypeError message):
-# greet("Ada", "Hi")        ->
-# greet(name="Ada")         ->
-# greet("Ada", greeting="Hi") ->
+# greet("Ada", "Hi")          -> TypeError: greet() takes 1 positional argument but 2 were given
+# greet(name="Ada")           -> TypeError: greet() got some positional-only arguments passed as keyword arguments: 'name'
+# greet("Ada", greeting="Hi") -> "Hi, Ada!"
