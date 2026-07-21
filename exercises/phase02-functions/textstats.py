@@ -40,9 +40,8 @@ def longest_words(text, n=5):
 
     Example: longest_words("a three seven", n=2) returns ["three", "seven"].
     """
-    # words = text.split()
-    # return sorted(words, key=len, reverse=True)[:n]
-    return max(text.split(), key=len)
+    words = text.split()
+    return sorted(words, key=len, reverse=True)[:n]
 
 def average_word_length(text):
     """Return the average word length.

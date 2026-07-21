@@ -14,12 +14,21 @@ Skills practiced:
 
 
 def transpose_comp(m):
-    raise NotImplementedError
+    """Transpose a matrix using a nested list comprehension."""
+    if not m:
+        return []
+    return [[row[column] for row in m] for column in range(len(m[0]))]
 
 
 def transpose_zip(m):
-    raise NotImplementedError
+    """Transpose a matrix using argument unpacking and ``zip``."""
+    return [list(column) for column in zip(*m)]
 
 
 # Why [[0]*3]*3 is broken:
-#
+# Multiplying the outer list copies references to the same inner list rather
+# than creating three independent rows:
+# matrix = [[0] * 3] * 3
+# matrix[0][1] = 7
+# matrix  # [[0, 7, 0], [0, 7, 0], [0, 7, 0]]
+# Build independent rows instead: [[0] * 3 for _ in range(3)].

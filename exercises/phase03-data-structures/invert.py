@@ -12,10 +12,17 @@ Skills practiced:
 - Inverting a mapping into a dict of lists
 """
 
+from collections import defaultdict
 
 def invert_roles(users):
-    raise NotImplementedError
+    roles = {}
+    for user, role in users.items():
+        roles.setdefault(role, []).append(user)
+    return roles
 
 
 def invert_roles_dd(users):
-    raise NotImplementedError
+    roles = defaultdict(list)
+    for user, role in users.items():
+        roles[role].append(user)
+    return roles

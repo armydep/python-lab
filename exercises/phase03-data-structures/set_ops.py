@@ -10,12 +10,12 @@ Skills practiced:
 
 
 def in_both(first, second):
-    raise NotImplementedError
+    return set(first) & set(second)
 
 
 def only_first(first, second):
-    raise NotImplementedError
+    return set(first) - set(second)
 
 
 def in_either(first, second):
-    raise NotImplementedError
+    return set(first) | set(second)
