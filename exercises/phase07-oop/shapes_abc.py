@@ -20,33 +20,39 @@ from typing import Protocol
 
 class Shape(ABC):
     @abstractmethod
-    def area(self):
-        ...
+    def area(self) -> float:
+        """Return the shape's area."""
+        raise NotImplementedError
 
 
 class Circle(Shape):
     def __init__(self, radius):
-        raise NotImplementedError
+        self.radius = radius
 
     def area(self):
-        raise NotImplementedError
+        import math
+        return self.radius * math.pi * self.radius
 
 
 class Rect(Shape):
     def __init__(self, width, height):
-        raise NotImplementedError
+        self.width = width
+        self.height = height
 
     def area(self):
-        raise NotImplementedError
+        return self.width * self.height
 
 
 def total_area(shapes):
-    raise NotImplementedError
+    return sum(shape.area() for shape in shapes)
 
 
 class Squarish(Protocol):
+    """Structural contract for objects with a floating-point side length."""
+
     side: float
 
 
-def describe_square(sq):
-    raise NotImplementedError
+def describe_square(sq: Squarish) -> str:
+    """Describe any object that satisfies the Squarish protocol."""
+    return f"square-ish with side {sq.side}"

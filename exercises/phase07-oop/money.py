@@ -14,15 +14,28 @@ Skills practiced:
 
 from dataclasses import dataclass
 from decimal import Decimal
+from functools import total_ordering
 
 
+@total_ordering
 @dataclass(frozen=True)
 class Money:
     amount: Decimal
     currency: str
 
     def __add__(self, other):
-        raise NotImplementedError
+        if not isinstance(other, Money):
+            return NotImplemented
+        if self.currency != other.currency:
+            raise ValueError("cannot add money in different currencies")
+        return Money(self.amount + other.amount, self.currency)
 
     def __lt__(self, other):
-        raise NotImplementedError
+        if not isinstance(other, Money):
+            return NotImplemented
+        if self.currency != other.currency:
+            raise ValueError("cannot compare money in different currencies")
+        return self.amount < other.amount
+
+    def __repr__(self):
+        return f"Money({self.amount!r}, {self.currency!r})"

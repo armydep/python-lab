@@ -25,10 +25,18 @@ class GPS:
 
 class Car:
     def __init__(self):
-        raise NotImplementedError
+        self.engine = Engine()
+        self.gps = GPS()
+
+    def start(self):
+        return self.engine.start()
+
+    def locate(self):
+        return self.gps.locate()
 
 
 # Why Car(Engine) is worse:
-# 1.
-# 2.
-# 3.
+# 1. A car has an engine; it is not substitutable for an engine everywhere.
+# 2. It exposes all public Engine behavior even when Car should hide/control it.
+# 3. Replacing Engine with another implementation requires changing inheritance,
+#    while composition only requires supplying a different engine object.

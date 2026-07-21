@@ -17,4 +17,36 @@ Skills practiced:
 
 class Temperature:
     def __init__(self, kelvin):
-        raise NotImplementedError
+        self.kelvin = kelvin
+
+    @property
+    def kelvin(self):
+        """Return the temperature in kelvin."""
+        return self._kelvin
+
+    @kelvin.setter
+    def kelvin(self, value):
+        if value < 0:
+            raise ValueError("temperature cannot be below absolute zero")
+        self._kelvin = value
+
+    @property
+    def celsius(self):
+        """Return the temperature in degrees Celsius."""
+        return self.kelvin - 273.15
+
+    @celsius.setter
+    def celsius(self, value):
+        self.kelvin = value + 273.15
+
+    @property
+    def fahrenheit(self):
+        """Return the temperature in degrees Fahrenheit."""
+        return self.celsius * 9 / 5 + 32
+
+    @fahrenheit.setter
+    def fahrenheit(self, value):
+        self.kelvin = (value - 32) * 5 / 9 + 273.15
+
+    def __repr__(self):
+        return f"Temperature(kelvin={self.kelvin!r})"
