@@ -11,4 +11,32 @@ Skills practiced:
 - The zip-on-the-same-iterator gotcha
 """
 
-# TODO
+# Prediction: the first conversion produces [0, 1, 4, 9, 16], and the
+# second produces [] because the generator has already been exhausted.
+g = (x * x for x in range(5))
+first_pass = list(g)
+second_pass = list(g)
+
+print("First pass: ", first_pass)
+print("Second pass:", second_pass)
+
+# Actual:
+# First pass:  [0, 1, 4, 9, 16]
+# Second pass: []
+
+
+# Prediction: zip calls next() twice on the same iterator for every pair, so
+# the result is [(0, 1), (2, 3), (4, 5)].
+it = iter(range(6))
+pairs = list(zip(it, it))
+
+print("Pairs:", pairs)
+
+# Actual:
+# Pairs: [(0, 1), (2, 3), (4, 5)]
+
+
+# Real bug class: consuming an iterator for logging, validation, or counting
+# exhausts it. Later processing then receives no values and may silently do no
+# work. Materialize it once when reuse is required, or create a fresh iterator
+# for each pass.

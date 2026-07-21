@@ -11,13 +11,24 @@ Skills practiced:
 """
 
 
+import itertools
+
+
 def fib():
-    raise NotImplementedError
+    previous = 1
+    current = 1
+
+    while True:
+        yield previous
+        previous, current = current, previous + current
 
 
 def first_n(n):
-    raise NotImplementedError
+    return list(itertools.islice(fib(), n))
 
 
 def first_above(limit):
-    raise NotImplementedError
+    for num in fib():
+        if num > limit:
+            return num
+    raise ValueError("No Fibonacci number found above the limit")

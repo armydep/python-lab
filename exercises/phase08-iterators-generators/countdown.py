@@ -16,13 +16,32 @@ Skills practiced:
 
 class Countdown:
     def __init__(self, n):
-        raise NotImplementedError
+        self.n = n
 
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.n <= 0:
+            raise StopIteration
+        current = self.n
+        self.n -= 1
+        return current
 
 def countdown_gen(n):
-    raise NotImplementedError
+    while n > 0:
+        yield n
+        n -= 1
 
 
 def desugared(iterable):
     """Collect items into a list using only iter()/next() — no for loop."""
-    raise NotImplementedError
+    iterator = iter(iterable)
+    result = []
+    while True:
+        try:
+            item = next(iterator)
+            result.append(item)
+        except StopIteration:
+            break
+    return result
