@@ -5,4 +5,4 @@ Skills practiced:
 - A module's top-level code runs once on first import
 """
 
-# TODO: module-level print (see mod_a.py)
+print("importing mod_b")

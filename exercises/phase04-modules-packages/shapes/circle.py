@@ -5,10 +5,14 @@ Skills practiced:
 - Using math.pi
 """
 
+import math
+
 
 def area(radius):
-    raise NotImplementedError
+    """Return the area of a circle with the given radius."""
+    return math.pi * radius ** 2
 
 
 def perimeter(radius):
-    raise NotImplementedError
+    """Return the circumference of a circle with the given radius."""
+    return 2 * math.pi * radius

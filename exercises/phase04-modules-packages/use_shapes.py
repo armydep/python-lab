@@ -12,4 +12,16 @@ Skills practiced:
 - Which names each import style brings into scope
 """
 
-# TODO
+# ``import shapes`` adds only the package name ``shapes`` here.
+import shapes
+
+# This adds the submodule name ``circle`` here.
+from shapes import circle
+
+# This adds only the alias ``rect_area`` here.
+from shapes.rectangle import area as rect_area
+
+
+print(shapes.area("circle", radius=2))
+print(circle.perimeter(2))
+print(rect_area(2, 3))

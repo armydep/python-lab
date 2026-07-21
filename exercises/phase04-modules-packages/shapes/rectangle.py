@@ -4,9 +4,12 @@ Skills practiced:
 - Module-level functions
 """
 
+
 def area(width, height):
-    raise NotImplementedError
+    """Return the area of a rectangle."""
+    return width * height
 
 
 def perimeter(width, height):
-    raise NotImplementedError
+    """Return the perimeter of a rectangle."""
+    return 2 * (width + height)

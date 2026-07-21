@@ -7,4 +7,4 @@ Skills practiced:
 - A module's top-level code runs once on first import
 """
 
-# TODO: module-level print
+print("importing mod_a")

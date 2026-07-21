@@ -16,7 +16,7 @@ Skills practiced:
 
 
 def main():
-    raise NotImplementedError
+    print("CLI module is running")
 
 
 if __name__ == "__main__":
