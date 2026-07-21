@@ -11,5 +11,18 @@ Skills practiced:
 """
 
 
-def chunked(iterable, size):
-    raise NotImplementedError
+def chunked(itr, size):
+    if size < 1:
+        raise ValueError('size < 1')
+    iterator = iter(itr)
+    while True:
+        items = []
+        for _ in range(size):
+            try:
+                item = next(iterator)
+                items.append(item)
+            except StopIteration:
+                break
+        if not items:
+            return
+        yield items

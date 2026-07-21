@@ -19,16 +19,25 @@ Skills practiced:
 
 
 def read_lines(path):
-    raise NotImplementedError
+    with open(path, encoding="utf-8") as log_file:
+        for line in log_file:
+            stripped = line.strip()
+            if stripped:
+                yield stripped
 
 
 def parse(lines):
-    raise NotImplementedError
+    for line in lines:
+        timestamp, level, message = line.split(maxsplit=2)
+        yield {"ts": timestamp, "level": level, "message": message}
 
 
 def only_errors(records):
-    raise NotImplementedError
+    for record in records:
+        if record["level"] == "ERROR":
+            yield record
 
 
 def to_messages(records):
-    raise NotImplementedError
+    for record in records:
+        yield record["message"]
