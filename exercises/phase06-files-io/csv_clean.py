@@ -13,6 +13,25 @@ Skills practiced:
 - Skipping and reporting bad rows
 """
 
+import csv
+
 
 def clean_csv(src, dst):
-    raise NotImplementedError
+    """Clean a CSV file and return line numbers of incomplete rows."""
+    skipped = []
+    with open(src, newline="", encoding="utf-8") as source:
+        reader = csv.DictReader(source)
+        fields = [name.strip() for name in reader.fieldnames or []]
+        reader.fieldnames = fields
+
+        with open(dst, "w", newline="", encoding="utf-8") as destination:
+            writer = csv.DictWriter(destination, fieldnames=fields)
+            if fields:
+                writer.writeheader()
+            for row in reader:
+                cleaned = {field: (row[field] or "").strip() for field in fields}
+                if not fields or any(not value for value in cleaned.values()):
+                    skipped.append(reader.line_num)
+                    continue
+                writer.writerow(cleaned)
+    return skipped

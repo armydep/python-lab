@@ -18,13 +18,40 @@ Skills practiced:
 
 
 def count_levels(path):
-    raise NotImplementedError
+    """Return a dict of log levels and their counts."""
+    count_dict = {}
+    with open(path, encoding="utf-8") as file:
+        for line in file:
+            parts = line.split(maxsplit=2)
+            if len(parts) >= 2:
+                level = parts[1]
+                count_dict[level] = count_dict.get(level, 0) + 1
+    return count_dict
 
 
 def last_errors(path, n=5):
-    raise NotImplementedError
+    """Return a list of the last n ERROR lines (stripped)."""
+    from collections import deque
+
+    error_lines = deque(maxlen=n)
+    with open(path, encoding="utf-8") as file:
+        for line in file:
+            parts = line.split(maxsplit=2)
+            if len(parts) >= 2 and parts[1] == "ERROR":
+                error_lines.append(line.strip())
+    return list(error_lines)
 
 
 def make_fake_log(path, lines=200):
     """Optional helper: write a synthetic log for manual experiments."""
-    raise NotImplementedError
+    import random
+    from datetime import datetime, timedelta
+
+    levels = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+    start_time = datetime.now() - timedelta(days=1)
+    with open(path, "w", encoding="utf-8") as file:
+        for _ in range(lines):
+            timestamp = start_time + timedelta(seconds=random.randint(0, 86400))
+            level = random.choice(levels)
+            message = f"Sample log message at {timestamp.isoformat()}"
+            file.write(f"{timestamp.isoformat()} {level} {message}\n")

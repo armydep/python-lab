@@ -11,10 +11,25 @@ Skills practiced:
 - Handling FileNotFoundError
 """
 
+import string
+import sys
+
 
 def top_words(path, n=10):
-    raise NotImplementedError
+    """Return the most frequent words, breaking count ties alphabetically."""
+    frequencies = {}
+    with open(path, encoding="utf-8") as file:
+        for word in file.read().split():
+            word = word.strip(string.punctuation).casefold()
+            if word:
+                frequencies[word] = frequencies.get(word, 0) + 1
+    ordered = sorted(frequencies.items(), key=lambda item: (-item[1], item[0]))
+    return ordered[:n]
 
 
 if __name__ == "__main__":
-    pass  # demo with a friendly FileNotFoundError message
+    filename = sys.argv[1] if len(sys.argv) > 1 else "sample.txt"
+    try:
+        print(top_words(filename))
+    except FileNotFoundError:
+        print(f"File not found: {filename}")

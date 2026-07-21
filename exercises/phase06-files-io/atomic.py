@@ -15,4 +15,21 @@ Skills practiced:
 
 
 def atomic_write_text(path, text):
-    raise NotImplementedError
+    """Write text to path atomically, crash-safe."""
+    import os
+    import tempfile
+    from pathlib import Path
+
+    path = Path(path)
+    temp_file = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w", encoding="utf-8", dir=path.parent, delete=False
+        ) as tmp:
+            temp_file = tmp.name
+            tmp.write(text)
+        os.replace(temp_file, path)
+    except Exception:
+        if temp_file and os.path.exists(temp_file):
+            os.remove(temp_file)
+        raise
