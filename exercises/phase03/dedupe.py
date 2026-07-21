@@ -6,8 +6,17 @@ Both: ["b","a","b","c","a"] -> ["b","a","c"].
 
 
 def dedupe_seen(items):
-    raise NotImplementedError
+    seen = set()
+    result = []
+
+    for item in items:
+        if item in seen:
+            continue
+        seen.add(item)
+        result.append(item)
+
+    return result
 
 
 def dedupe_fromkeys(items):
-    raise NotImplementedError
+    return list(dict.fromkeys(items))

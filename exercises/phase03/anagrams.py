@@ -7,4 +7,12 @@ keyed by "".join(sorted(word)) with lists of the original words:
 
 
 def group_anagrams(words):
-    raise NotImplementedError
+    groups = {}
+
+    for word in words:
+        key = "".join(sorted(word))
+        if key not in groups:
+            groups[key] = []
+        groups[key].append(word)
+
+    return groups

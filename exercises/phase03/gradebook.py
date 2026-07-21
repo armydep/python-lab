@@ -10,12 +10,28 @@ above(grades, threshold) -> sorted list of subjects whose average > threshold
 
 
 def subject_averages(grades):
-    raise NotImplementedError
+    scores_by_subject = {}
+
+    for subject, score in grades:
+        if subject not in scores_by_subject:
+            scores_by_subject[subject] = []
+        scores_by_subject[subject].append(score)
+
+    return {
+        subject: sum(scores) / len(scores)
+        for subject, scores in scores_by_subject.items()
+    }
 
 
 def best_subject(grades):
-    raise NotImplementedError
+    averages = subject_averages(grades)
+    return max(averages, key=averages.get)
 
 
 def above(grades, threshold):
-    raise NotImplementedError
+    averages = subject_averages(grades)
+    return sorted(
+        subject
+        for subject, average in averages.items()
+        if average > threshold
+    )
