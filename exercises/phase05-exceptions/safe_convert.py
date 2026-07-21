@@ -11,4 +11,8 @@ Skills practiced:
 
 
 def to_int(s, default=None):
-    raise NotImplementedError
+    """Convert a value to an integer, returning default on expected errors."""
+    try:
+        return int(s)
+    except (ValueError, TypeError):
+        return default

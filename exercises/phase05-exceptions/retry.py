@@ -21,4 +21,12 @@ class RetryError(Exception):
 
 
 def call_with_retry(func, attempts=3):
-    raise NotImplementedError
+    if attempts < 1:
+        raise ValueError("attempts must be at least 1")
+
+    for att in range(attempts):
+        try:
+            return func()
+        except OSError as err:
+            if att == attempts - 1:
+                raise RetryError("All attempts failed") from err

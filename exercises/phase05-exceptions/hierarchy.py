@@ -23,16 +23,34 @@ class BankError(Exception):
 
 
 class InsufficientFunds(BankError):
-    pass  # TODO: __init__ storing .shortfall + a useful message
+    def __init__(self, shortfall):
+        self.shortfall = shortfall
+        super().__init__(f"Insufficient funds: shortfall of {shortfall}")
 
 
 class AccountNotFound(BankError):
-    pass  # TODO: __init__ storing .account_id + a useful message
-
+    def __init__(self, account_id):
+        self.account_id = account_id
+        super().__init__(f"Account not found: {account_id}")
 
 def withdraw(accounts, account_id, amount):
-    raise NotImplementedError
+    if account_id not in accounts:
+        raise AccountNotFound(account_id)
+    balance = accounts[account_id]
+    if amount > balance:
+        shortfall = amount - balance
+        raise InsufficientFunds(shortfall)
+    accounts[account_id] -= amount
+    return accounts[account_id]
 
 
 if __name__ == "__main__":
-    pass  # demo caller
+    demo_accounts = {"acc1": 100}
+    for demo_id, demo_amount in [("acc1", 30), ("ghost", 10), ("acc1", 100)]:
+        try:
+            balance = withdraw(demo_accounts, demo_id, demo_amount)
+            print(f"New balance: {balance}")
+        except AccountNotFound as error:
+            print(f"Unknown account: {error.account_id}")
+        except InsufficientFunds as error:
+            print(f"Insufficient funds; shortfall: {error.shortfall}")
