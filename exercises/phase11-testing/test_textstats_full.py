@@ -20,7 +20,26 @@ Skills practiced:
 
 import pytest
 
+from textstats import run, word_count
 
-@pytest.mark.skip(reason="TODO: write the textstats test suite (Phase 11.1)")
-def test_placeholder():
-    ...
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("", 0),
+        ("!!! ???", 2),
+        ("שלום עולם", 2),
+        ("echo echo echo", 3),
+        ("one    two\tthree", 3),
+        ("first\nsecond\nthird", 3),
+    ],
+)
+def test_word_count_edge_cases(text: str, expected: int) -> None:
+    # Watched fail first: temporarily making word_count return 0 broke the
+    # repeated-words case before the correct implementation was restored.
+    assert word_count(text) == expected
+
+
+def test_run_rejects_unknown_analysis_with_clear_message() -> None:
+    with pytest.raises(ValueError, match=r"^unknown analysis: missing$"):
+        run("some text", "missing")
