@@ -12,17 +12,25 @@ Skills practiced:
 """
 
 from contextlib import contextmanager
+import time
 
 
 class Timer:
     def __enter__(self):
-        raise NotImplementedError
+        self._start = time.perf_counter()
+        return self
 
     def __exit__(self, exc_type, exc, tb):
-        raise NotImplementedError
+        self.elapsed = time.perf_counter() - self._start
+        return False
 
 
 @contextmanager
 def timer():
-    raise NotImplementedError
-    yield  # keep this a generator; restructure as you implement
+    """Yield a dictionary populated with elapsed seconds on exit."""
+    result = {}
+    start = time.perf_counter()
+    try:
+        yield result
+    finally:
+        result["elapsed"] = time.perf_counter() - start

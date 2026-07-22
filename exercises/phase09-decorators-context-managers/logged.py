@@ -11,7 +11,15 @@ Skills practiced:
 - Parameterized (three-layer) decorators
 - Decorator stacking order
 """
+from functools import wraps
 
 
 def logged(prefix="CALL"):
-    raise NotImplementedError
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            print(f"{prefix}: {func.__name__}{args!r}", end=" ")
+            result = func(*args, **kwargs)
+            return result
+        return wrapper
+    return decorator

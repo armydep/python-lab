@@ -11,6 +11,16 @@ Skills practiced:
 - Limits with unhashable arguments
 """
 
+from functools import wraps
 
 def memoize(func):
-    raise NotImplementedError
+    cache = {}
+
+    @wraps(func)
+    def wrapper(*args):
+        if args not in cache:
+            cache[args] = func(*args)
+        return cache[args]
+
+    wrapper.cache = cache
+    return wrapper

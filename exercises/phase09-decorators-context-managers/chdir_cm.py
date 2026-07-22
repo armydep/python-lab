@@ -10,9 +10,17 @@ Skills practiced:
 """
 
 from contextlib import contextmanager
+import os
 
 
 @contextmanager
 def working_directory(path):
-    raise NotImplementedError
-    yield  # keep this a generator; restructure as you implement
+    previous_directory = os.getcwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(previous_directory)
+
+
+# Python 3.11+ also provides equivalent behavior via contextlib.chdir.

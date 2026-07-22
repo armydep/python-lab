@@ -11,6 +11,17 @@ Skills practiced:
 - time.perf_counter
 """
 
+import time
+from functools import wraps
+
 
 def timed(func):
-    raise NotImplementedError
+    @wraps(func)
+    def wrp(*args, **kwargs):
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        end = time.perf_counter()
+        wrp.last_elapsed = end - start
+        return result
+
+    return wrp

@@ -10,7 +10,23 @@ Skills practiced:
 - Decorators that take arguments
 - Selective retry on given exception types
 """
+from functools import wraps
 
 
 def retry(attempts=3, on=(OSError,)):
-    raise NotImplementedError
+    if attempts < 1:
+        raise ValueError("attempts must be at least 1")
+
+    def decorator(func):
+        @wraps(func)
+        def call_with_retry(*args, **kwargs):
+            for attempt in range(attempts):
+                try:
+                    return func(*args, **kwargs)
+                except on:
+                    if attempt == attempts - 1:
+                        raise
+
+        return call_with_retry
+
+    return decorator
