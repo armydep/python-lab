@@ -10,10 +10,11 @@ Skills practiced:
 - Type inference
 """
 
+from collections.abc import Iterable
 from typing import TypeVar
 
 T = TypeVar("T")
 
 
-def first(xs, default=None):  # TODO: annotate with T
-    raise NotImplementedError
+def first(xs: Iterable[T], default: T | None = None) -> T | None:
+    return next(iter(xs), default)

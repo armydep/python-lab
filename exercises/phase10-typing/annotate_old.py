@@ -12,4 +12,31 @@ Skills practiced:
 - Running mypy --strict
 """
 
-# TODO
+from collections.abc import Iterable, Mapping
+
+
+# Annotation gap: the original function did not specify the numeric argument
+# type or the three-value tuple it returns.
+def describe(*numbers: float) -> tuple[float, float, float]:
+    if not numbers:
+        raise ValueError("describe() requires at least one number")
+    return min(numbers), max(numbers), sum(numbers) / len(numbers)
+
+
+# Annotation gap: the original function did not describe either the input
+# mapping or the dictionary of lists produced by the inversion.
+def invert_roles(users: Mapping[str, str]) -> dict[str, list[str]]:
+    roles: dict[str, list[str]] = {}
+    for user, role in users.items():
+        roles.setdefault(role, []).append(user)
+    return roles
+
+
+# Annotation gap: the original function left the element and nested container
+# types implicit. No runtime bug was found while adding these annotations.
+def group_anagrams(words: Iterable[str]) -> dict[str, list[str]]:
+    groups: dict[str, list[str]] = {}
+    for word in words:
+        key = "".join(sorted(word))
+        groups.setdefault(key, []).append(word)
+    return groups

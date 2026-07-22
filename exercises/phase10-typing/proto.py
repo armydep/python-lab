@@ -13,12 +13,36 @@ Skills practiced:
 - Iterable annotations
 """
 
-from typing import Iterable, Protocol
+from collections.abc import Iterable
+from typing import Protocol, Self
 
 
 class Storable(Protocol):
-    def to_dict(self) -> dict: ...
+    def to_dict(self) -> dict[str, object]: ...
+
+    @classmethod
+    def from_dict(cls, data: dict[str, object]) -> Self: ...
 
 
-def save_all(items):  # TODO: annotate
-    raise NotImplementedError
+def save_all(items: Iterable[Storable]) -> list[dict[str, object]]:
+    return [item.to_dict() for item in items]
+
+
+class User:
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+    def to_dict(self) -> dict[str, object]:
+        return {"name": self.name}
+
+    @classmethod
+    def from_dict(cls, data: dict[str, object]) -> Self:
+        return cls(name=str(data["name"]))
+
+
+# This call makes mypy verify that User structurally satisfies Storable.
+# Renaming User.to_dict to serialize produced:
+# error: Argument 1 to "save_all" has incompatible type "list[User]";
+# expected "Iterable[Storable]"  [arg-type]
+EXAMPLE_USERS = [User("Ada"), User("Bob")]
+EXAMPLE_DATA = save_all(EXAMPLE_USERS)

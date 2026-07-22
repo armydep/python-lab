@@ -12,4 +12,23 @@ Skills practiced:
 - Refactoring one function into two
 """
 
-# TODO
+from collections.abc import Iterable, Mapping
+
+
+NameRecord = Mapping[str, str]
+
+
+def get_names(data: Iterable[NameRecord]) -> list[str]:
+    """Return the name from each record."""
+    return [record["name"] for record in data]
+
+
+def get_names_joined(data: Iterable[NameRecord]) -> str:
+    """Return the names as a comma-separated string."""
+    return ", ".join(get_names(data))
+
+
+# The old flag-based design returned str | list[str], so every caller had to
+# narrow the result before using string- or list-specific operations. The
+# problem was the ambiguous API, not the annotation. Separate functions give
+# each call one predictable return type.

@@ -20,12 +20,14 @@ USERS = {1: "ada", 2: "bob"}
 
 
 def find_user(user_id: int) -> str | None:
-    raise NotImplementedError
+    return USERS.get(user_id)
 
 
 def shout_name_guarded(user_id: int) -> str:
-    raise NotImplementedError
+    if user_id not in USERS:
+        return "NOBODY"
+    return USERS[user_id].upper()
 
 
 def shout_name_or_raise(user_id: int) -> str:
-    raise NotImplementedError
+    return USERS[user_id].upper()

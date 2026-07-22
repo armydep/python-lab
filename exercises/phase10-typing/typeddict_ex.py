@@ -20,5 +20,10 @@ class TaskRow(TypedDict):
     tags: list[str]
 
 
-def row_to_summary(row):  # TODO: annotate
-    raise NotImplementedError
+def row_to_summary(row: TaskRow) -> str:
+    status = "done" if row["done"] else "todo"
+    tags = ", ".join(row["tags"])
+    # Using row["titel"] produced:
+    # error: TypedDict "TaskRow" has no key "titel"  [typeddict-item]
+    # note: Did you mean "title"?
+    return f'#{row["id"]} [{status}] {row["title"]} (tags: {tags})'
