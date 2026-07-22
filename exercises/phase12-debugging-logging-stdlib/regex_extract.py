@@ -17,5 +17,26 @@ Skills practiced:
 import re
 
 
-def parse_request(line):
-    raise NotImplementedError
+REQUEST_PATTERN = re.compile(
+    r"^(?P<ip>\S+)\s+-\s+-\s+"
+    r"\[[^]]+\]\s+"
+    r'"(?P<method>[A-Z]+)\s+(?P<path>\S+)\s+HTTP/\d+(?:\.\d+)?"\s+'
+    r"(?P<status>\d{3})$"
+)
+
+
+def parse_request(line: str) -> tuple[str, str, str, int] | None:
+    match = REQUEST_PATTERN.fullmatch(line)
+    if match is None:
+        return None
+    return (
+        match.group("ip"),
+        match.group("method"),
+        match.group("path"),
+        int(match.group("status")),
+    )
+
+
+# To extract only the IP, `line.split(maxsplit=1)[0]` beats a regex: the IP is
+# already the first whitespace-delimited field, so splitting is shorter and
+# communicates that simple structure directly.
