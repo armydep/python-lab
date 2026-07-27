@@ -69,8 +69,12 @@ They must work from a directory outside the repository.
 - `pyproject.toml` defines the package and `taskforge` console command.
 - The package is installed in editable mode.
 - `taskforge` and `python -m taskforge` have been verified from `/tmp`.
+- The public API explicitly exports the seven v0.1 core operations.
+- Public API behavior is covered by `tests/test_public_api.py`.
+- The `version` command prints `taskforge.__version__` and keeps the REPL open.
+- Version-command behavior is covered by `tests/test_cli.py`.
 
-## Remaining task 1: define the public API
+## Completed task 1: define the public API
 
 Update `src/taskforge/__init__.py`.
 
@@ -96,7 +100,7 @@ The v0.1 public operations are:
 Do not use `from ... import *`. The exports should be explicit so
 `__init__.py` clearly documents the supported public surface.
 
-## Remaining task 2: add the version command
+## Completed task 2: add the version command
 
 Update `src/taskforge/cli.py`.
 

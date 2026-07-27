@@ -1,12 +1,13 @@
 """TaskForge v0.1 — REPL and command-line interface.
 
-Commands: add <title>, done <id>, ls, ls <tag>, stats, quit.
+Commands: add <title>, done <id>, ls, ls <tag>, stats, version, quit.
 Parse with str.split; dispatch via a dict of functions (Phase 2 pattern) —
 no if/elif chain over command names. All printing lives HERE, not in core.
 """
 
 from collections.abc import Callable
 
+import taskforge
 from taskforge import core
 
 
@@ -77,6 +78,13 @@ def quit_command(_tasks: list[core.Task], arguments: list[str]) -> bool:
     return False
 
 
+def version_command(_tasks: list[core.Task], arguments: list[str]) -> bool:
+    if arguments:
+        raise ValueError("usage: version")
+    print(taskforge.__version__)
+    return True
+
+
 CommandHandler = Callable[[list[core.Task], list[str]], bool]
 
 COMMANDS: dict[str, CommandHandler] = {
@@ -85,12 +93,13 @@ COMMANDS: dict[str, CommandHandler] = {
     "ls": list_command,
     "stats": stats_command,
     "quit": quit_command,
+    "version": version_command,
 }
 
 
 def main() -> None:
     tasks: list[core.Task] = []
-    print("TaskForge v0.1 — commands: add, done, ls, stats, quit")
+    print("TaskForge v0.1 — commands: add, done, ls, stats, version, quit")
 
     while True:
         try:
