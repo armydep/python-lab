@@ -1,0 +1,15 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "taskforge"
+version = "0.1.0"
+description = "TaskForge learning-roadmap project"
+requires-python = ">=3.12"
+
+[project.scripts]
+taskforge = "taskforge.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,4 +1,4 @@
-"""TaskForge v0.1 — core operations (Phase 3 larger assignment).
+"""TaskForge v0.1 — core operations (moved into the Phase 4 package).
 
 A task is a dict: {"id": int, "title": str, "done": bool,
 "tags": set[str], "priority": int}. Ids come from an incrementing counter.

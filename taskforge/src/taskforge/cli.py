@@ -1,4 +1,4 @@
-"""TaskForge v0.1 — REPL driver (run with: python -m taskforge).
+"""TaskForge v0.1 — REPL and command-line interface.
 
 Commands: add <title>, done <id>, ls, ls <tag>, stats, quit.
 Parse with str.split; dispatch via a dict of functions (Phase 2 pattern) —
