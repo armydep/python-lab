@@ -1,0 +1,52 @@
+[
+  {
+    "question": "What does // do with two numbers?",
+    "options": ["true division", "floor division", "modulo", "power"],
+    "answer": "b"
+  },
+  {
+    "question": "Which operator gives the remainder after division?",
+    "options": ["//", "%", "**", "/"],
+    "answer": "b"
+  },
+  {
+    "question": "What does input() return?",
+    "options": ["an int", "a float", "a string", "a bool"],
+    "answer": "c"
+  },
+  {
+    "question": "Which loop is best when you want to repeat until a condition changes?",
+    "options": ["for", "while", "match", "import"],
+    "answer": "b"
+  },
+  {
+    "question": "What does str.isdigit() check?",
+    "options": [
+      "whether a string contains only digit characters",
+      "whether a number is even",
+      "whether a value is a float",
+      "whether a string is empty"
+    ],
+    "answer": "a"
+  },
+  {
+    "question": "Which function converts a valid numeric string like '42' to an integer?",
+    "options": ["str()", "float()", "int()", "bool()"],
+    "answer": "c"
+  },
+  {
+    "question": "What does random.shuffle(items) do?",
+    "options": [
+      "returns a sorted copy of items",
+      "changes item order in place",
+      "removes duplicates from items",
+      "chooses the first item"
+    ],
+    "answer": "b"
+  },
+  {
+    "question": "What does the elif keyword mean?",
+    "options": ["else if", "end loop if", "equal if", "except if"],
+    "answer": "a"
+  }
+]

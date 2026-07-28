@@ -12,12 +12,13 @@ from taskforge.core import (
 from taskforge.errors import (
     DuplicateTask,
     InvalidTask,
+    StorageError,
     TaskForgeError,
     TaskNotFound,
 )
 
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 __all__ = [
     "__version__",
@@ -30,6 +31,7 @@ __all__ = [
     "remove_task",
     "rename_tag",
     "stats",
+    "StorageError",
     "TaskForgeError",
     "TaskNotFound",
 ]

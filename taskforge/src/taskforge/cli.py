@@ -6,10 +6,16 @@ no if/elif chain over command names. All printing lives HERE, not in core.
 """
 
 from collections.abc import Callable
+from pathlib import Path
 
 import taskforge
+from taskforge import csv_adapter
 from taskforge import core
 from taskforge.errors import TaskForgeError
+from taskforge.storage import load_tasks, save_tasks
+
+
+DEFAULT_DATA_PATH = Path.home() / ".taskforge" / "tasks.json"
 
 
 def add_command(tasks: list[core.Task], arguments: list[str]) -> bool:
@@ -73,6 +79,26 @@ def stats_command(tasks: list[core.Task], arguments: list[str]) -> bool:
     return True
 
 
+def export_command(tasks: list[core.Task], arguments: list[str]) -> bool:
+    if len(arguments) != 2 or arguments[0] != "csv":
+        raise ValueError("usage: export csv <path>")
+    csv_adapter.export_tasks(Path(arguments[1]), tasks)
+    print(f"Exported {len(tasks)} task(s) to {arguments[1]}")
+    return True
+
+
+def import_command(tasks: list[core.Task], arguments: list[str]) -> bool:
+    if len(arguments) != 2 or arguments[0] != "csv":
+        raise ValueError("usage: import csv <path>")
+    imported_tasks, malformed_lines = csv_adapter.import_tasks(Path(arguments[1]))
+    tasks[:] = imported_tasks
+    core.sync_next_task_id(tasks)
+    for line_number in malformed_lines:
+        print(f"Skipped malformed CSV row on line {line_number}")
+    print(f"Imported {len(imported_tasks)} task(s) from {arguments[1]}")
+    return True
+
+
 def quit_command(_tasks: list[core.Task], arguments: list[str]) -> bool:
     if arguments:
         raise ValueError("usage: quit")
@@ -91,16 +117,29 @@ CommandHandler = Callable[[list[core.Task], list[str]], bool]
 COMMANDS: dict[str, CommandHandler] = {
     "add": add_command,
     "done": done_command,
+    "export": export_command,
+    "import": import_command,
     "ls": list_command,
     "stats": stats_command,
     "quit": quit_command,
     "version": version_command,
 }
 
+MUTATING_COMMANDS = {"add", "done", "import"}
 
-def main() -> None:
-    tasks: list[core.Task] = []
-    print("TaskForge v0.1 — commands: add, done, ls, stats, version, quit")
+
+def main(storage_path: Path = DEFAULT_DATA_PATH) -> None:
+    try:
+        tasks: list[core.Task] = load_tasks(storage_path)
+        core.sync_next_task_id(tasks)
+    except TaskForgeError as error:
+        print(f"Error: {error}")
+        tasks = []
+
+    print(
+        "TaskForge v0.2 — commands: add, done, ls, stats, "
+        "export, import, version, quit"
+    )
 
     while True:
         try:
@@ -121,6 +160,8 @@ def main() -> None:
 
         try:
             should_continue = handler(tasks, arguments)
+            if command in MUTATING_COMMANDS:
+                save_tasks(storage_path, tasks)
         except TaskForgeError as error:
             print(f"Error: {error}")
             continue

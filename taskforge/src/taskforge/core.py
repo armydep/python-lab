@@ -33,6 +33,13 @@ def _find_task_by_title(tasks: list[Task], task_title: str) -> Task | None:
     return None
 
 
+def sync_next_task_id(tasks: list[Task]) -> None:
+    """Advance the ID counter beyond existing tasks; return nothing."""
+    global _task_ids
+    next_id = max((task["id"] for task in tasks), default=0) + 1
+    _task_ids = count(start=next_id)
+
+
 def add_task(tasks: list[Task], title: str, *, tags: Iterable[str] | None = None, priority: int = 1,) -> None:
     """Append a new incomplete task with a unique ID; return nothing."""
     if not title.strip():

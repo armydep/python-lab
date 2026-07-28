@@ -27,3 +27,12 @@ class DuplicateTask(TaskForgeError):
     def __init__(self, title: str) -> None:
         self.title = title
         super().__init__(f"Duplicate task: {title!r}")
+
+
+class StorageError(TaskForgeError):
+    """Raised for expected TaskForge persistence failures."""
+
+    def __init__(self, path, reason: str) -> None:
+        self.path = path
+        self.reason = reason
+        super().__init__(f"Storage error for {path}: {reason}")

@@ -16,6 +16,7 @@ PUBLIC_OPERATIONS = {
 PUBLIC_ERRORS = {
     "DuplicateTask",
     "InvalidTask",
+    "StorageError",
     "TaskForgeError",
     "TaskNotFound",
 }
@@ -59,4 +60,4 @@ def test_public_api_can_add_a_task() -> None:
 
 
 def test_version_is_public() -> None:
-    assert taskforge.__version__ == "0.1.0"
+    assert taskforge.__version__ == "0.2.0"

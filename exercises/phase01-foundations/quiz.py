@@ -29,59 +29,22 @@ Skills practiced:
 
 import random
 import sys
+import json
+from pathlib import Path
 
-QUESTIONS = [
-    (
-        "What does // do with two numbers?",
-        ["true division", "floor division", "modulo", "power"],
-        "b",
-    ),
-    (
-        "Which operator gives the remainder after division?",
-        ["//", "%", "**", "/"],
-        "b",
-    ),
-    (
-        "What does input() return?",
-        ["an int", "a float", "a string", "a bool"],
-        "c",
-    ),
-    (
-        "Which loop is best when you want to repeat until a condition changes?",
-        ["for", "while", "match", "import"],
-        "b",
-    ),
-    (
-        "What does str.isdigit() check?",
-        [
-            "whether a string contains only digit characters",
-            "whether a number is even",
-            "whether a value is a float",
-            "whether a string is empty",
-        ],
-        "a",
-    ),
-    (
-        "Which function converts a valid numeric string like '42' to an integer?",
-        ["str()", "float()", "int()", "bool()"],
-        "c",
-    ),
-    (
-        "What does random.shuffle(items) do?",
-        [
-            "returns a sorted copy of items",
-            "changes item order in place",
-            "removes duplicates from items",
-            "chooses the first item",
-        ],
-        "b",
-    ),
-    (
-        "What does the elif keyword mean?",
-        ["else if", "end loop if", "equal if", "except if"],
-        "a",
-    ),
-]
+QUESTIONS_PATH = Path(__file__).with_name("quiz_questions.json")
+
+
+def load_questions(path: Path = QUESTIONS_PATH) -> list[tuple[str, list[str], str]]:
+    """Load quiz questions from a UTF-8 JSON data file."""
+    raw_questions = json.loads(path.read_text(encoding="utf-8"))
+    return [
+        (question["question"], question["options"], question["answer"])
+        for question in raw_questions
+    ]
+
+
+QUESTIONS = load_questions()
 
 LETTERS = ["a", "b", "c", "d"]
 
