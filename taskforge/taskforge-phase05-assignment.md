@@ -47,7 +47,7 @@ Phase 4 is complete:
 - The `version` command reads `taskforge.__version__`.
 - Phase 4 and TaskForge tests pass.
 
-## Task 1: create the domain-error hierarchy
+## Completed task 1: create the domain-error hierarchy
 
 Create:
 
@@ -75,7 +75,7 @@ Contracts:
 Decide which error classes belong to the package's public API and make those
 exports explicit in `taskforge/__init__.py`.
 
-## Task 2: validate core input
+## Completed task 2: validate core input
 
 Update `src/taskforge/core.py` so invalid domain input raises the new typed
 errors.
@@ -100,7 +100,7 @@ Document whether duplicate-title comparison is case-sensitive and whether
 surrounding title whitespace is normalized or merely validated. Use the same
 rule consistently.
 
-## Task 3: make the CLI the error boundary
+## Completed task 3: make the CLI the error boundary
 
 Update `src/taskforge/cli.py`.
 
@@ -120,12 +120,12 @@ Requirements:
 
 The CLI may print errors; `core.py` and `errors.py` may not.
 
-## Task 4: create the hostile-input script
+## Completed task 4: create the hostile-input script
 
 Create:
 
 ```text
-taskforge/abuse.py
+taskforge/src/taskforge/abuse.py
 ```
 
 Drive at least ten hostile inputs through the public `taskforge` API. Cover
@@ -147,6 +147,12 @@ For each expected failure, print:
 - The operation being attempted
 - The caught exception type
 - Its friendly message
+
+Use a stable label beginning with `CASE ` for each hostile case so the
+diagnostic output and its black-box test remain easy to scan. After all
+expected failures, perform a valid operation and print
+`VALID AFTER FAILURES: OK` to prove earlier failures did not corrupt the
+application state.
 
 The script must catch specific TaskForge domain errors, not a bare exception.
 It is a manual diagnostic script; Phase 11 later converts this behavior into
@@ -183,7 +189,7 @@ python -m pytest -q taskforge/tests
 Run the hostile-input script:
 
 ```bash
-python taskforge/abuse.py
+python -m taskforge.abuse
 ```
 
 Run the installed CLI:

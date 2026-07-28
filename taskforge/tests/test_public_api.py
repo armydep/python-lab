@@ -1,11 +1,10 @@
 """Tests for TaskForge's intentionally public package interface."""
 
 import taskforge
-from taskforge import core
+from taskforge import core, errors
 
 
-EXPECTED_PUBLIC_NAMES = {
-    "__version__",
+PUBLIC_OPERATIONS = {
     "add_task",
     "complete_task",
     "find_by_tag",
@@ -14,6 +13,17 @@ EXPECTED_PUBLIC_NAMES = {
     "rename_tag",
     "stats",
 }
+PUBLIC_ERRORS = {
+    "DuplicateTask",
+    "InvalidTask",
+    "TaskForgeError",
+    "TaskNotFound",
+}
+EXPECTED_PUBLIC_NAMES = {
+    "__version__",
+    *PUBLIC_OPERATIONS,
+    *PUBLIC_ERRORS,
+}
 
 
 def test_public_api_is_explicit() -> None:
@@ -21,8 +31,13 @@ def test_public_api_is_explicit() -> None:
 
 
 def test_public_operations_reexport_core_functions() -> None:
-    for name in EXPECTED_PUBLIC_NAMES - {"__version__"}:
+    for name in PUBLIC_OPERATIONS:
         assert getattr(taskforge, name) is getattr(core, name)
+
+
+def test_public_errors_reexport_domain_exceptions() -> None:
+    for name in PUBLIC_ERRORS:
+        assert getattr(taskforge, name) is getattr(errors, name)
 
 
 def test_public_api_can_add_a_task() -> None:

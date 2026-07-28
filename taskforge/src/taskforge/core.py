@@ -14,19 +14,33 @@ from collections.abc import Iterable
 from itertools import count
 from typing import Any
 
+from taskforge.errors import InvalidTask, DuplicateTask, TaskNotFound
 
 Task = dict[str, Any]
 _task_ids = count(start=1)
 
 
-def add_task(
-    tasks: list[Task],
-    title: str,
-    *,
-    tags: Iterable[str] | None = None,
-    priority: int = 1,
-) -> None:
+def _find_task_by_id(tasks: list[Task], task_id: int) -> Task | None:
+    for task in tasks:
+        if task["id"] == task_id:
+            return task
+    return None
+
+def _find_task_by_title(tasks: list[Task], task_title: str) -> Task | None:
+    for task in tasks:
+        if task["title"] == task_title:
+            return task
+    return None
+
+
+def add_task(tasks: list[Task], title: str, *, tags: Iterable[str] | None = None, priority: int = 1,) -> None:
     """Append a new incomplete task with a unique ID; return nothing."""
+    if not title.strip():
+        raise InvalidTask("title cannot be empty")
+    if priority < 0:
+        raise InvalidTask("priority cannot be negative")
+    if _find_task_by_title(tasks, title) is not None:
+        raise DuplicateTask(title)
     task = {
         "id": next(_task_ids),
         "title": title,
@@ -39,22 +53,18 @@ def add_task(
 
 def complete_task(tasks: list[Task], task_id: int) -> None:
     """Mark the task with ``task_id`` as completed in place; return nothing."""
-    for task in tasks:
-        if task["id"] == task_id:
-            task["done"] = True
-            return
-
-    raise ValueError(f"task with ID {task_id} does not exist")
+    task = _find_task_by_id(tasks, task_id)
+    if task is None:
+        raise TaskNotFound(task_id)
+    task["done"] = True
 
 
 def remove_task(tasks: list[Task], task_id: int) -> None:
     """Remove the task with ``task_id`` in place; return nothing."""
-    for index, task in enumerate(tasks):
-        if task["id"] == task_id:
-            del tasks[index]
-            return
-
-    raise ValueError(f"task with ID {task_id} does not exist")
+    task = _find_task_by_id(tasks, task_id)
+    if task is None:
+        raise TaskNotFound(task_id)
+    tasks.remove(task)
 
 
 def find_by_tag(tasks: list[Task], tag: str) -> list[Task]:

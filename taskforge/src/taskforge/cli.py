@@ -9,6 +9,7 @@ from collections.abc import Callable
 
 import taskforge
 from taskforge import core
+from taskforge.errors import TaskForgeError
 
 
 def add_command(tasks: list[core.Task], arguments: list[str]) -> bool:
@@ -120,6 +121,9 @@ def main() -> None:
 
         try:
             should_continue = handler(tasks, arguments)
+        except TaskForgeError as error:
+            print(f"Error: {error}")
+            continue
         except ValueError as error:
             print(f"Error: {error}")
             continue
