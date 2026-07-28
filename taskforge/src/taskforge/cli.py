@@ -1,8 +1,9 @@
-"""TaskForge v0.1 — REPL and command-line interface.
+"""TaskForge REPL and command-line interface.
 
-Commands: add <title>, done <id>, ls, ls <tag>, stats, version, quit.
+Commands: add <title>, done <id>, ls, ls <tag>, stats, export, import,
+version, quit.
 Parse with str.split; dispatch via a dict of functions (Phase 2 pattern) —
-no if/elif chain over command names. All printing lives HERE, not in core.
+no if/elif chain over command names. All printing lives HERE.
 """
 
 from collections.abc import Callable
@@ -10,47 +11,52 @@ from pathlib import Path
 
 import taskforge
 from taskforge import csv_adapter
-from taskforge import core
 from taskforge.errors import TaskForgeError
-from taskforge.storage import load_tasks, save_tasks
+from taskforge.models import Task
+from taskforge.repository import JsonRepository, MemoryRepository, TaskRepository
 
 
 DEFAULT_DATA_PATH = Path.home() / ".taskforge" / "tasks.json"
 
 
-def add_command(tasks: list[core.Task], arguments: list[str]) -> bool:
+def add_command(repo: TaskRepository, arguments: list[str]) -> bool:
     if not arguments:
         raise ValueError("usage: add <title>")
-    core.add_task(tasks, " ".join(arguments))
-    print(f"Added task {tasks[-1]['id']}: {tasks[-1]['title']}")
+    task = repo.add(Task(id=None, title=" ".join(arguments)))
+    print(f"Added task {task.id}: {task.title}")
     return True
 
 
-def done_command(tasks: list[core.Task], arguments: list[str]) -> bool:
+def done_command(repo: TaskRepository, arguments: list[str]) -> bool:
     if len(arguments) != 1:
         raise ValueError("usage: done <id>")
     try:
         task_id = int(arguments[0])
     except ValueError as error:
         raise ValueError("task ID must be an integer") from error
-    core.complete_task(tasks, task_id)
+    repo.get(task_id).complete()
     print(f"Completed task {task_id}")
     return True
 
 
-def print_task(task: core.Task) -> None:
-    marker = "x" if task["done"] else " "
-    tags = ", ".join(sorted(task["tags"])) or "-"
+def print_task(task: Task) -> None:
+    marker = "x" if task.done else " "
+    tags = ", ".join(sorted(task.tags)) or "-"
     print(
-        f"{task['id']:>3} [{marker}] {task['title']} "
-        f"(priority={task['priority']}, tags={tags})"
+        f"{task.id:>3} [{marker}] {task.title} "
+        f"(priority={int(task.priority)}, tags={tags})"
     )
 
 
-def list_command(tasks: list[core.Task], arguments: list[str]) -> bool:
+def list_command(repo: TaskRepository, arguments: list[str]) -> bool:
     if len(arguments) > 1:
         raise ValueError("usage: ls [tag]")
-    selected = core.find_by_tag(tasks, arguments[0]) if arguments else tasks
+    tasks = repo.list()
+    selected = (
+        [task for task in tasks if arguments[0] in task.tags]
+        if arguments
+        else tasks
+    )
     if not selected:
         print("No tasks")
         return True
@@ -59,13 +65,19 @@ def list_command(tasks: list[core.Task], arguments: list[str]) -> bool:
     return True
 
 
-def stats_command(tasks: list[core.Task], arguments: list[str]) -> bool:
+def stats_command(repo: TaskRepository, arguments: list[str]) -> bool:
     if arguments:
         raise ValueError("usage: stats")
-    summary = core.stats(tasks)
-    tag_counts = summary["tag_counts"]
+    tasks = repo.list()
+    tag_counts: dict[str, int] = {}
+    for task in tasks:
+        for tag in task.tags:
+            tag_counts[tag] = tag_counts.get(tag, 0) + 1
+    done_count = sum(1 for task in tasks if task.done)
+    done_ratio = done_count / len(tasks) if tasks else 0.0
+
     print(f"Tasks: {len(tasks)}")
-    print(f"Done: {summary['done_ratio']:.0%}")
+    print(f"Done: {done_ratio:.0%}")
     if tag_counts:
         print(
             "Tags: "
@@ -79,40 +91,40 @@ def stats_command(tasks: list[core.Task], arguments: list[str]) -> bool:
     return True
 
 
-def export_command(tasks: list[core.Task], arguments: list[str]) -> bool:
+def export_command(repo: TaskRepository, arguments: list[str]) -> bool:
     if len(arguments) != 2 or arguments[0] != "csv":
         raise ValueError("usage: export csv <path>")
+    tasks = repo.list()
     csv_adapter.export_tasks(Path(arguments[1]), tasks)
     print(f"Exported {len(tasks)} task(s) to {arguments[1]}")
     return True
 
 
-def import_command(tasks: list[core.Task], arguments: list[str]) -> bool:
+def import_command(repo: TaskRepository, arguments: list[str]) -> bool:
     if len(arguments) != 2 or arguments[0] != "csv":
         raise ValueError("usage: import csv <path>")
     imported_tasks, malformed_lines = csv_adapter.import_tasks(Path(arguments[1]))
-    tasks[:] = imported_tasks
-    core.sync_next_task_id(tasks)
+    repo.replace_all(imported_tasks)
     for line_number in malformed_lines:
         print(f"Skipped malformed CSV row on line {line_number}")
     print(f"Imported {len(imported_tasks)} task(s) from {arguments[1]}")
     return True
 
 
-def quit_command(_tasks: list[core.Task], arguments: list[str]) -> bool:
+def quit_command(_repo: TaskRepository, arguments: list[str]) -> bool:
     if arguments:
         raise ValueError("usage: quit")
     return False
 
 
-def version_command(_tasks: list[core.Task], arguments: list[str]) -> bool:
+def version_command(_repo: TaskRepository, arguments: list[str]) -> bool:
     if arguments:
         raise ValueError("usage: version")
     print(taskforge.__version__)
     return True
 
 
-CommandHandler = Callable[[list[core.Task], list[str]], bool]
+CommandHandler = Callable[[TaskRepository, list[str]], bool]
 
 COMMANDS: dict[str, CommandHandler] = {
     "add": add_command,
@@ -128,16 +140,16 @@ COMMANDS: dict[str, CommandHandler] = {
 MUTATING_COMMANDS = {"add", "done", "import"}
 
 
-def main(storage_path: Path = DEFAULT_DATA_PATH) -> None:
-    try:
-        tasks: list[core.Task] = load_tasks(storage_path)
-        core.sync_next_task_id(tasks)
-    except TaskForgeError as error:
-        print(f"Error: {error}")
-        tasks = []
+def main(repository: TaskRepository | None = None) -> None:
+    if repository is None:
+        try:
+            repository = JsonRepository(DEFAULT_DATA_PATH)
+        except TaskForgeError as error:
+            print(f"Error: {error}")
+            repository = MemoryRepository()
 
     print(
-        "TaskForge v0.2 — commands: add, done, ls, stats, "
+        "TaskForge v0.3a — commands: add, done, ls, stats, "
         "export, import, version, quit"
     )
 
@@ -159,9 +171,9 @@ def main(storage_path: Path = DEFAULT_DATA_PATH) -> None:
             continue
 
         try:
-            should_continue = handler(tasks, arguments)
+            should_continue = handler(repository, arguments)
             if command in MUTATING_COMMANDS:
-                save_tasks(storage_path, tasks)
+                repository.save()
         except TaskForgeError as error:
             print(f"Error: {error}")
             continue

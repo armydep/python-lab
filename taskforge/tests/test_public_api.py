@@ -1,7 +1,7 @@
 """Tests for TaskForge's intentionally public package interface."""
 
 import taskforge
-from taskforge import core, errors
+from taskforge import core, errors, models, repository
 
 
 PUBLIC_OPERATIONS = {
@@ -20,10 +20,21 @@ PUBLIC_ERRORS = {
     "TaskForgeError",
     "TaskNotFound",
 }
+PUBLIC_MODELS = {
+    "Priority",
+    "Task",
+}
+PUBLIC_REPOSITORIES = {
+    "JsonRepository",
+    "MemoryRepository",
+    "TaskRepository",
+}
 EXPECTED_PUBLIC_NAMES = {
     "__version__",
     *PUBLIC_OPERATIONS,
     *PUBLIC_ERRORS,
+    *PUBLIC_MODELS,
+    *PUBLIC_REPOSITORIES,
 }
 
 
@@ -39,6 +50,16 @@ def test_public_operations_reexport_core_functions() -> None:
 def test_public_errors_reexport_domain_exceptions() -> None:
     for name in PUBLIC_ERRORS:
         assert getattr(taskforge, name) is getattr(errors, name)
+
+
+def test_public_models_reexport_model_classes() -> None:
+    for name in PUBLIC_MODELS:
+        assert getattr(taskforge, name) is getattr(models, name)
+
+
+def test_public_repositories_reexport_repository_classes() -> None:
+    for name in PUBLIC_REPOSITORIES:
+        assert getattr(taskforge, name) is getattr(repository, name)
 
 
 def test_public_api_can_add_a_task() -> None:
@@ -60,4 +81,4 @@ def test_public_api_can_add_a_task() -> None:
 
 
 def test_version_is_public() -> None:
-    assert taskforge.__version__ == "0.2.0"
+    assert taskforge.__version__ == "0.3.0a0"

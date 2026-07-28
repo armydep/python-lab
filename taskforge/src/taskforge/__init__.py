@@ -16,9 +16,11 @@ from taskforge.errors import (
     TaskForgeError,
     TaskNotFound,
 )
+from taskforge.models import Priority, Task
+from taskforge.repository import JsonRepository, MemoryRepository, TaskRepository
 
 
-__version__ = "0.2.0"
+__version__ = "0.3.0a0"
 
 __all__ = [
     "__version__",
@@ -27,11 +29,16 @@ __all__ = [
     "DuplicateTask",
     "find_by_tag",
     "InvalidTask",
+    "JsonRepository",
+    "MemoryRepository",
     "pending_sorted_by_priority",
+    "Priority",
     "remove_task",
     "rename_tag",
     "stats",
     "StorageError",
+    "Task",
     "TaskForgeError",
     "TaskNotFound",
+    "TaskRepository",
 ]

@@ -1,4 +1,10 @@
-"""JSON persistence adapter for TaskForge tasks."""
+"""Legacy JSON persistence adapter for dict-based TaskForge tasks.
+
+As of Phase 7, ``taskforge.repository.JsonRepository`` is the preferred
+durable persistence boundary for ``taskforge.models.Task`` objects. This
+module remains as a Phase 6 compatibility adapter for dict-based callers and
+tests.
+"""
 
 from __future__ import annotations
 

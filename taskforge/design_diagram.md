@@ -293,3 +293,29 @@ The important change is the new adapter boundary:
   reporting.
 - `errors.py` remains the shared expected-failure vocabulary, extended with
   `StorageError`.
+
+## Phase 7 target architecture
+
+Phase 7 moves the primary TaskForge architecture from dict-based functions to
+an object-oriented domain model and repository boundary.
+
+Detailed Phase 7 diagrams are maintained in
+[`phase07_design_diagram.md`](phase07_design_diagram.md).
+
+Target dependency direction:
+
+```text
+__main__ → cli → repository → models → errors
+              └→ csv_adapter → models/errors
+```
+
+The main Phase 7 shift:
+
+- `models.py` owns `Task` and `Priority`.
+- `repository.py` owns collection state, ID assignment, duplicate-title checks,
+  lookups, removal, replacement, and persistence boundaries.
+- `JsonRepository` becomes the preferred JSON storage boundary.
+- `MemoryRepository` gives tests and non-durable runs a swappable repository.
+- `cli.py` talks to `TaskRepository` instead of a raw task list.
+- `core.py` and `storage.py` remain only as compatibility APIs for earlier
+  dict-based phases.

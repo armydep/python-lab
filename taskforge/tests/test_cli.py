@@ -7,11 +7,12 @@ import pytest
 import taskforge
 from taskforge.cli import COMMANDS, import_command, main, version_command
 from taskforge.errors import StorageError
-from taskforge.storage import load_tasks, save_tasks
+from taskforge.models import Priority, Task
+from taskforge.repository import JsonRepository, MemoryRepository
 
 
 def test_version_command_prints_package_version(capsys) -> None:
-    should_continue = version_command([], [])
+    should_continue = version_command(MemoryRepository(), [])
 
     assert should_continue is True
     assert capsys.readouterr().out == f"{taskforge.__version__}\n"
@@ -19,7 +20,7 @@ def test_version_command_prints_package_version(capsys) -> None:
 
 def test_version_command_rejects_arguments() -> None:
     with pytest.raises(ValueError, match="usage: version"):
-        version_command([], ["unexpected"])
+        version_command(MemoryRepository(), ["unexpected"])
 
 
 def test_version_command_is_registered() -> None:
@@ -40,7 +41,7 @@ def test_repl_reports_domain_error_and_continues(
     )
     monkeypatch.setattr("builtins.input", lambda _prompt: next(commands))
 
-    main(tmp_path / "tasks.json")
+    main(JsonRepository(tmp_path / "tasks.json"))
 
     output = capsys.readouterr().out
     assert "Duplicate task: 'Existing task'" in output
@@ -49,14 +50,14 @@ def test_repl_reports_domain_error_and_continues(
 def test_repl_does_not_swallow_unexpected_errors(
     monkeypatch,
 ) -> None:
-    def broken_command(_tasks, _arguments):
+    def broken_command(_repo, _arguments):
         raise RuntimeError("programming bug")
 
     monkeypatch.setitem(COMMANDS, "broken", broken_command)
     monkeypatch.setattr("builtins.input", lambda _prompt: "broken")
 
     with pytest.raises(RuntimeError, match="programming bug"):
-        main(Path("unused.json"))
+        main(MemoryRepository())
 
 
 def test_repl_loads_existing_tasks_at_startup(
@@ -65,88 +66,74 @@ def test_repl_loads_existing_tasks_at_startup(
     capsys,
 ) -> None:
     storage_path = tmp_path / "tasks.json"
-    save_tasks(
-        storage_path,
-        [
-            {
-                "id": 10,
-                "title": "Persisted task",
-                "done": False,
-                "tags": {"disk"},
-                "priority": 4,
-            }
-        ],
+    repo = JsonRepository(storage_path)
+    repo.add(
+        Task(
+            id=10,
+            title="Persisted task",
+            done=False,
+            tags={"disk"},
+            priority=Priority.HIGH,
+        )
     )
+    repo.save()
     commands = iter(["ls", "quit"])
     monkeypatch.setattr("builtins.input", lambda _prompt: next(commands))
 
-    main(storage_path)
+    main(JsonRepository(storage_path))
 
     assert "Persisted task" in capsys.readouterr().out
 
 
 def test_successful_mutation_saves_once(monkeypatch) -> None:
     calls = []
+    repo = MemoryRepository()
     commands = iter(["add Saved task", "quit"])
     monkeypatch.setattr("builtins.input", lambda _prompt: next(commands))
-    monkeypatch.setattr("taskforge.cli.load_tasks", lambda _path: [])
-    monkeypatch.setattr(
-        "taskforge.cli.save_tasks",
-        lambda path, tasks: calls.append((path, [task.copy() for task in tasks])),
-    )
+    monkeypatch.setattr(repo, "save", lambda: calls.append(repo.list()))
 
-    main(Path("store.json"))
+    main(repo)
 
     assert len(calls) == 1
-    assert calls[0][1][0]["title"] == "Saved task"
+    assert calls[0][0].title == "Saved task"
 
 
 def test_failed_mutation_does_not_save(monkeypatch) -> None:
     calls = []
+    repo = MemoryRepository()
+    repo.add(Task(id=1, title="Existing", priority=Priority.LOW))
     commands = iter(["add Existing", "quit"])
     monkeypatch.setattr("builtins.input", lambda _prompt: next(commands))
-    monkeypatch.setattr(
-        "taskforge.cli.load_tasks",
-        lambda _path: [
-            {
-                "id": 1,
-                "title": "Existing",
-                "done": False,
-                "tags": set(),
-                "priority": 1,
-            }
-        ],
-    )
-    monkeypatch.setattr("taskforge.cli.save_tasks", lambda _path, _tasks: calls.append(True))
+    monkeypatch.setattr(repo, "save", lambda: calls.append(True))
 
-    main(Path("store.json"))
+    main(repo)
 
     assert calls == []
 
 
 def test_read_only_command_does_not_save(monkeypatch) -> None:
     calls = []
+    repo = MemoryRepository()
     commands = iter(["ls", "stats", "version", "quit"])
     monkeypatch.setattr("builtins.input", lambda _prompt: next(commands))
-    monkeypatch.setattr("taskforge.cli.load_tasks", lambda _path: [])
-    monkeypatch.setattr("taskforge.cli.save_tasks", lambda _path, _tasks: calls.append(True))
+    monkeypatch.setattr(repo, "save", lambda: calls.append(True))
 
-    main(Path("store.json"))
+    main(repo)
 
     assert calls == []
 
 
 def test_storage_error_is_reported_and_repl_remains_alive(monkeypatch, capsys) -> None:
+    repo = MemoryRepository()
     commands = iter(["add Unsaved task", "quit"])
     monkeypatch.setattr("builtins.input", lambda _prompt: next(commands))
-    monkeypatch.setattr("taskforge.cli.load_tasks", lambda _path: [])
 
-    def fail_save(path, _tasks):
-        raise StorageError(path, "disk full")
+    def fail_save():
+        raise StorageError(Path("store.json"), "disk full")
 
-    monkeypatch.setattr("taskforge.cli.save_tasks", fail_save)
+    monkeypatch.setattr(repo, "save", fail_save)
 
-    main(Path("store.json"))
+    main(repo)
 
     output = capsys.readouterr().out
     assert "Storage error for store.json: disk full" in output
@@ -158,16 +145,16 @@ def test_csv_export_import_round_trips_all_task_fields(
 ) -> None:
     storage_path = tmp_path / "tasks.json"
     csv_path = tmp_path / "tasks.csv"
-    tasks = [
-        {
-            "id": 1,
-            "title": "Ship CSV",
-            "done": True,
-            "tags": {"csv", "io"},
-            "priority": 5,
-        }
-    ]
-    save_tasks(storage_path, tasks)
+    task = Task(
+        id=1,
+        title="Ship CSV",
+        done=True,
+        tags={"csv", "io"},
+        priority=Priority.HIGH,
+    )
+    repo = JsonRepository(storage_path)
+    repo.add(task)
+    repo.save()
     commands = iter(
         [
             f"export csv {csv_path}",
@@ -177,9 +164,9 @@ def test_csv_export_import_round_trips_all_task_fields(
     )
     monkeypatch.setattr("builtins.input", lambda _prompt: next(commands))
 
-    main(storage_path)
+    main(JsonRepository(storage_path))
 
-    assert load_tasks(storage_path) == tasks
+    assert JsonRepository(storage_path).list() == [task]
 
 
 def test_bad_csv_rows_are_skipped_and_reported(
@@ -188,18 +175,19 @@ def test_bad_csv_rows_are_skipped_and_reported(
 ) -> None:
     csv_path = tmp_path / "bad.csv"
     csv_path.write_text(
-        "id,title,done,priority,tags\n"
-        "1,Good,false,2,\"[\"\"ok\"\"]\"\n"
-        "not-an-int,Bad,false,1,[]\n"
-        "2,Also good,true,3,\"[\"\"x\"\", \"\"y\"\"]\"\n",
+        "id,title,done,priority,tags,created_at\n"
+        "1,Good,false,2,\"[\"\"ok\"\"]\",2026-07-28T12:00:00+00:00\n"
+        "not-an-int,Bad,false,1,[],2026-07-28T12:00:00+00:00\n"
+        "2,Also good,true,3,\"[\"\"x\"\", \"\"y\"\"]\",2026-07-28T12:00:00+00:00\n",
         encoding="utf-8",
     )
-    tasks = []
+    repo = MemoryRepository()
 
-    import_command(tasks, ["csv", str(csv_path)])
+    import_command(repo, ["csv", str(csv_path)])
 
     output = capsys.readouterr().out
+    tasks = repo.list()
     assert "Skipped malformed CSV row on line 3" in output
-    assert [task["title"] for task in tasks] == ["Good", "Also good"]
-    assert tasks[0]["tags"] == {"ok"}
-    assert tasks[1]["tags"] == {"x", "y"}
+    assert [task.title for task in tasks] == ["Good", "Also good"]
+    assert tasks[0].tags == {"ok"}
+    assert tasks[1].tags == {"x", "y"}

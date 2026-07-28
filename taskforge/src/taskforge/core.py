@@ -1,13 +1,15 @@
-"""TaskForge v0.1 — core operations (moved into the Phase 4 package).
+"""Legacy dict-based TaskForge core operations.
 
 A task is a dict: {"id": int, "title": str, "done": bool,
 "tags": set[str], "priority": int}. Ids come from an incrementing counter.
 
+As of Phase 7, the primary domain model is ``taskforge.models.Task`` and the
+primary collection boundary is ``taskforge.repository.TaskRepository``. This
+module remains public as a compatibility API for earlier roadmap phases and
+their tests.
+
 Design rule (from the roadmap): no function both mutates its input AND
 returns a value — pick one per function and say which in its docstring.
-
-In Phase 4 you will restructure this into an installable src/ package —
-keep I/O out of this module (printing belongs in __main__.py).
 """
 
 from collections.abc import Iterable
